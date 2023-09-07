@@ -9,3 +9,79 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model User {
+  id String @id @default(uuid())
+  name String
+  email String
+  password String
+  created_at DateTime? @default(now())
+  updated_at DateTime? @default(now())
+
+  @@map("users")
+}
+
+model Category{
+  id String @id @default(uuid())
+  name String
+  created_at DateTime? @default(now())
+  updated_at DateTime? @default(now())
+
+  // informa que em uma categoria podemos ter varios produtos
+  products Product[]
+
+  @@map("categories")
+}
+
+model Product{
+  id String @id @default(uuid())
+  name String
+  price String
+  description String
+  banner String
+  created_at DateTime? @default(now())
+  updated_at DateTime? @default(now())
+
+  // cria uma relação com a categoria
+  category Category @relation(fields: [category_id], references: [id])
+  category_id String
+  
+  // Informa que em uma ordem podemos ter vários itens
+  items Item[]
+
+  @@map("products")
+}
+
+model Order{
+  id String @id @default(uuid())
+  table Int
+  status Boolean @default(false)
+  draft Boolean @default(true)
+  name String
+  created_at DateTime? @default(now())
+  updated_at DateTime? @default(now())
+
+  // Informa que em uma ordem podemos ter vários itens
+  items Item[]
+  
+  @@map("Orders")
+}
+
+model Item{
+  id String @id @default(uuid())
+  amount Int
+  name String
+  created_at DateTime? @default(now())
+  updated_at DateTime? @default(now())
+
+  // cria uma relação com a Order do pedido
+  order Order @relation(fields: [order_id], references: [id])
+  order_id String
+
+  // cria uma relação com o produto
+  product Product @relation(fields: [product_id], references: [id])
+  product_id String
+
+  @@map("items")
+}
+
